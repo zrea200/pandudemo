@@ -1,7 +1,7 @@
 <div align="center">
   <br />
-    <a href="https://www.youtube.com/watch?v=FkowOdMjvYo" target="_blank">
-      <img src="https://github.com/user-attachments/assets/8e230c4b-b14f-478b-82c0-6128d7516052" alt="Project Banner">
+    <a href="https://youtu.be/lie0cr3wESQ" target="_blank">
+      <img src="https://i.ibb.co/wR9G2k3/Readme-Thumbnail.png" alt="Project Banner">
     </a>
   <br />
 
@@ -37,7 +37,7 @@ channel, <a href="https://www.youtube.com/@javascriptmastery/videos" target="_bl
 If you prefer visual learning, this is the perfect resource for you. Follow our tutorial to learn how to build projects
 like these step-by-step in a beginner-friendly manner!
 
-<a href="https://www.youtube.com/watch?v=FkowOdMjvYo" target="_blank"><img src="https://github.com/sujatagunale/EasyRead/assets/151519281/1736fca5-a031-4854-8c09-bc110e3bc16d" /></a>
+<a href="https://youtu.be/lie0cr3wESQ?si=yLQyhMrYLjpysnqE" target="_blank"><img src="https://github.com/sujatagunale/EasyRead/assets/151519281/1736fca5-a031-4854-8c09-bc110e3bc16d" /></a>
 
 ## <a name="introduction">🤖 Introduction</a>
 
@@ -95,8 +95,8 @@ Make sure you have the following installed on your machine:
 **Cloning the Repository**
 
 ```bash
-git clone https://github.com/JavaScript-Mastery-Pro/storeIt.git
-cd storeIt
+git clone https://github.com/JavaScript-Mastery-Pro/storage_management_solution.git
+cd storage_management_solution
 ```
 
 **Installation**
