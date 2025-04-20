@@ -30,17 +30,23 @@ export const uploadFile = async ({
       inputFile,
     );
 
+    // 存储bucketFileId以便之后删除文件时使用
+    const bucketFileId = bucketFile.$id;
+
+    // 创建文档对象，确保不包含bucketFileId字段
     const fileDocument = {
       type: getFileType(bucketFile.name).type,
       name: bucketFile.name,
-      url: constructFileUrl(bucketFile.$id),
+      url: constructFileUrl(bucketFileId), // 使用bucketFileId变量
       extension: getFileType(bucketFile.name).extension,
       size: bucketFile.sizeOriginal,
       owner: ownerId,
       accountId,
       users: [],
-      bucketFileId: bucketFile.$id,
+      bucketFileld: appwriteConfig.bucketId,
     };
+    
+    console.log("上传文件文档对象:", JSON.stringify(fileDocument, null, 2));
 
     const newFile = await databases
       .createDocument(
@@ -50,9 +56,21 @@ export const uploadFile = async ({
         fileDocument,
       )
       .catch(async (error: unknown) => {
-        await storage.deleteFile(appwriteConfig.bucketId, bucketFile.$id);
+        await storage.deleteFile(appwriteConfig.bucketId, bucketFileId);
         handleError(error, "Failed to create file document");
       });
+
+    // 在文件元数据中存储bucketFileId
+    if (newFile) {
+      // 将bucketFileId存储到自定义数据结构中，便于后续删除操作
+      const fileWithBucketId = {
+        ...newFile,
+        $customData: {
+          bucketFileId
+        }
+      };
+      return parseStringify(fileWithBucketId);
+    }
 
     revalidatePath(path);
     return parseStringify(newFile);
@@ -176,20 +194,39 @@ export const deleteFile = async ({
   const { databases, storage } = await createAdminClient();
 
   try {
+    // 先获取文件信息
+    const file = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.filesCollectionId,
+      fileId
+    );
+
+    // 如果没有提供bucketFileId，则从URL中提取
+    let fileBucketId = bucketFileId;
+    if (!fileBucketId && file.url) {
+      // 从URL中提取文件ID
+      const urlMatch = file.url.match(/\/files\/([^\/]+)\/view/);
+      if (urlMatch && urlMatch[1]) {
+        fileBucketId = urlMatch[1];
+      }
+    }
+
+    // 删除数据库中的文档
     const deletedFile = await databases.deleteDocument(
       appwriteConfig.databaseId,
       appwriteConfig.filesCollectionId,
       fileId,
     );
 
-    if (deletedFile) {
-      await storage.deleteFile(appwriteConfig.bucketId, bucketFileId);
+    // 如果文档删除成功且有bucketFileId，则删除存储中的文件
+    if (deletedFile && fileBucketId) {
+      await storage.deleteFile(appwriteConfig.bucketId, fileBucketId);
     }
 
     revalidatePath(path);
     return parseStringify({ status: "success" });
   } catch (error) {
-    handleError(error, "Failed to rename file");
+    handleError(error, "Failed to delete file");
   }
 };
 
